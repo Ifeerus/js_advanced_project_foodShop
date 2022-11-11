@@ -250,33 +250,33 @@ window.addEventListener('DOMContentLoaded', () => {
             // form.append(statusMessage);
             form.insertAdjacentElement('afterend', statusMessage);
 
-            const request = new XMLHttpRequest();
-            request.open('POST', 'server.php');
-
             //есть два формата передачи инф - form data || JSON
-            request.setRequestHeader('Content-type', 'application/json');
             const formData = new FormData(form); //использ заголовки
+
             //перебираем форм дату в объект
             const object = {};
             formData.forEach(function(value, key) {
                 object[key] = value;
             });
 
-            const json = JSON.stringify(object);
-
-            //отправка формы
-            request.send(json);
-            
-            request.addEventListener('load', () => {
-                if (request.status === 200) {
-                    console.log(request.response);
-                    showThanksModal(message.success);
-                    form.reset(); //перезапуск формы
-                    statusMessage.remove();
-                } else {
-                    showThanksModal(message.failure);
-                }
+            fetch('server.php', {
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json'
+                },
+                body: JSON.stringify(object)
+            })
+            .then(data => data.text())
+            .then(data => {
+                console.log(data);
+                showThanksModal(message.success);
+                statusMessage.remove();
+            }).catch(() => {
+                showThanksModal(message.failure);
+            }).finally(() => {
+                form.reset(); //перезапуск формы
             });
+
         });
     }
 
@@ -306,24 +306,4 @@ window.addEventListener('DOMContentLoaded', () => {
             closeModal();
         }, 4000);
     }
-
-    // //fetch API - based on promisses
-
-    // //простой ГЕТ запрос к JSONPlaceholder
-    // //получаем первую тудушку(без параметров - классический ГЕТ запр)
-    // fetch('https://jsonplaceholder.typicode.com/todos/1')
-    //     .then(response => response.json()) //JSON.parse == response.json() - JS obj
-    //     .then(json => console.log(json));
-
-    //POST 
-    fetch('https://jsonplaceholder.typicode.com/posts', {
-        method: "POST",
-        body: JSON.stringify({neme: 'Alex'}),
-        headers: {
-            'Content-type': 'application/json'
-        }
-    })
-        .then(response => response.json()) //JSON.parse == response.json() - JS obj
-        .then(json => console.log(json));
-
 });
