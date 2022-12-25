@@ -229,17 +229,31 @@ window.addEventListener('DOMContentLoaded', () => {
     const forms = document.querySelectorAll('form');
     const message = {
         loading: 'img/form/spinner.svg',
-        success: 'Спасибо, мы с Вами свяжемся!',
+        success: 'Спасибо, мы c Вами свяжемся!',
         failure: 'Что-то пошло не так...'
     };
 
     forms.forEach(item => {
-        postData(item);
+        bindPostData(item);
     });
 
-    function postData(form) {
+    //async and await works in pair
+    //async - понимает что код функции асинхронный
+    const postData = async (url, data) => {
+        const result = await fetch(url, { //await - ставим перед тем, что будем ждать
+            method: 'POST',
+            headers: {
+                'Content-type': 'application/json'
+            },
+            body: data
+        });
+        //ждет перед возвращением
+        return await result.json();
+    };
+
+    function bindPostData(form) {
         form.addEventListener('submit', (e) => {
-            e.preventDefault();
+            e.preventDefault(); //отмена стандартного поведения браузера(без перезагрузки)
 
             const statusMessage = document.createElement('img');
             statusMessage.src = message.loading;
@@ -251,22 +265,24 @@ window.addEventListener('DOMContentLoaded', () => {
             form.insertAdjacentElement('afterend', statusMessage);
 
             //есть два формата передачи инф - form data || JSON
-            const formData = new FormData(form); //использ заголовки
+            const formData = new FormData(form); //использ заголовки //name - у форм хтмл
 
             //перебираем форм дату в объект
-            const object = {};
-            formData.forEach(function(value, key) {
-                object[key] = value;
-            });
+            // const object = {};
+            // formData.forEach(function(value, key) {
+            //     object[key] = value;
+            // });
 
-            fetch('server.php', {
-                method: 'POST',
-                headers: {
-                    'Content-type': 'application/json'
-                },
-                body: JSON.stringify(object)
-            })
-            .then(data => data.text())
+            const json = JSON.stringify(Object.fromEntries(formData.entries()));
+
+            // fetch('server.php', {
+            //     method: 'POST',
+            //     headers: {
+            //         'Content-type': 'application/json'
+            //     },
+            //     body: JSON.stringify(object)
+            // })
+            postData('http://localhost:3000/requests', json)
             .then(data => {
                 console.log(data);
                 showThanksModal(message.success);
@@ -306,4 +322,8 @@ window.addEventListener('DOMContentLoaded', () => {
             closeModal();
         }, 4000);
     }
+
+    fetch('http://localhost:3000/menu')
+        .then(data => data.json())
+        .then(res => console.log(res));
 });
