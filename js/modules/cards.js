@@ -43,7 +43,7 @@ function cards() {
         }
     }
 
-        getResource('https://js-advanced-project-food-shop.vercel.app/menu')
+        getResource('https://json-server-food.vercel.app/api/menu')
             .then(data => {
                 data.forEach(({img, altimg, title, descr, price}) => {
                     new MenuCard(img, altimg, title, descr, price, '.menu .container').render();
