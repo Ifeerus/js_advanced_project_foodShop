@@ -46,7 +46,7 @@ function forms(formSelector ,modalTimerId) {
             //     },
             //     body: JSON.stringify(object)
             // })
-            postData('http://localhost:3000/requests', json)
+            postData('https://json-server-food.vercel.app/api/requests', json)
             .then(data => {
                 console.log(data);
                 showThanksModal(message.success);
