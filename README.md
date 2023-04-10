@@ -6,6 +6,6 @@ I also studied it in depth, as well as wrote my variants of some frequently used
 3. Calculators
 4. Sliders
 5. Tabs
-6. ...an others.
+6. ...and others.
 
 Also I have worked with local server, like GETTING and POSTING data.
